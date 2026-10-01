@@ -1,0 +1,162 @@
+/* =========================================================
+   MES SUPPORT — Dashboard Styling
+   ========================================================= */
+
+#root {
+  min-height: 100vh;
+}
+
+/* ---------- Global dashboard feel ---------- */
+
+body {
+  margin: 0;
+  background: #f4f7fb;
+  color: #172033;
+  font-family:
+    Inter,
+    Roboto,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+/* ---------- Main MUI cards ---------- */
+
+.MuiCard-root {
+  border: 1px solid #e7ebf2 !important;
+  border-radius: 14px !important;
+  background: #ffffff !important;
+  box-shadow: 0 3px 12px rgba(20, 32, 50, 0.06) !important;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.MuiCard-root:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 22px rgba(20, 32, 50, 0.1) !important;
+}
+
+/* ---------- KPI cards ---------- */
+
+.MuiCardContent-root {
+  padding: 22px !important;
+}
+
+.MuiCardContent-root:last-child {
+  padding-bottom: 22px !important;
+}
+
+/* ---------- Sidebar ---------- */
+
+.MuiDrawer-paper {
+  border-right: 1px solid #202a3a !important;
+}
+
+.MuiDrawer-paper .MuiListItemButton-root {
+  margin: 3px 10px;
+  border-radius: 9px;
+  color: #d5dbea;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.MuiDrawer-paper .MuiListItemButton-root:hover {
+  background-color: #1c2940;
+  color: #ffffff;
+}
+
+.MuiDrawer-paper .MuiListItemButton-root.Mui-selected {
+  background-color: #243653;
+  color: #ffffff;
+}
+
+.MuiDrawer-paper .MuiListItemButton-root.Mui-selected:hover {
+  background-color: #2b405f;
+}
+
+.MuiDrawer-paper .MuiListItemIcon-root {
+  min-width: 38px;
+  color: inherit;
+}
+
+.MuiDrawer-paper .MuiTypography-root {
+  line-height: 1.35;
+}
+
+/* ---------- Dashboard heading ---------- */
+
+.MuiTypography-h4 {
+  letter-spacing: -0.5px;
+}
+
+/* ---------- Chart cards ---------- */
+
+.recharts-wrapper {
+  font-family:
+    Inter,
+    Roboto,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+.recharts-text {
+  fill: #667085;
+  font-size: 12px;
+}
+
+.recharts-cartesian-grid line {
+  stroke: #e9edf3;
+}
+
+.recharts-tooltip-wrapper {
+  outline: none;
+}
+
+.recharts-default-tooltip {
+  border: 1px solid #e4e8ef !important;
+  border-radius: 10px !important;
+  box-shadow: 0 8px 24px rgba(20, 32, 50, 0.12) !important;
+}
+
+/* ---------- Pie chart labels ---------- */
+
+.recharts-pie-label-text {
+  fill: #344054;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ---------- Top bar ---------- */
+
+.MuiAppBar-root {
+  backdrop-filter: blur(8px);
+}
+
+/* ---------- Chips ---------- */
+
+.MuiChip-root {
+  font-weight: 600 !important;
+}
+
+/* ---------- Responsive layout ---------- */
+
+@media (max-width: 900px) {
+  .MuiCardContent-root {
+    padding: 18px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .MuiCard-root {
+    border-radius: 11px !important;
+  }
+
+  .MuiTypography-h4 {
+    font-size: 2rem !important;
+  }
+}
