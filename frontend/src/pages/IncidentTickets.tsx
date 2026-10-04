@@ -1,5 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
+
+import type { Classification } from "../api/ml";
+import IncidentSuggestions from "../components/ml/IncidentSuggestions";
 
 import {
   Box,
@@ -49,6 +52,13 @@ interface Incident {
   updated_at: string;
 }
 
+interface IssueCategory {
+  category_id: number;
+  category_name: string;
+}
+
+type AiField = "priority" | "issue_category_id";
+
 const API = "/api";
 
 function IncidentTickets() {
@@ -60,6 +70,11 @@ function IncidentTickets() {
 const [saving, setSaving] = useState(false);
 const [saveMessage, setSaveMessage] = useState("");
 const [editingIncidentId, setEditingIncidentId] = useState<number | null>(null);
+const [categories, setCategories] = useState<IssueCategory[]>([]);
+const [aiFilled, setAiFilled] = useState<Partial<Record<AiField, boolean>>>({});
+const [categoryHint, setCategoryHint] = useState("");
+// Fields the user changed by hand: AI auto-fill never overwrites these.
+const touchedRef = useRef<Set<AiField>>(new Set());
 const [formData, setFormData] = useState({
   incident_title: "",
   incident_description: "",
@@ -162,7 +177,54 @@ const [formData, setFormData] = useState({
 
   useEffect(() => {
     fetchIncidents();
+    axios
+      .get<IssueCategory[]>(`${API}/issue-categories/?skip=0&limit=100`)
+      .then((response) => setCategories(response.data))
+      .catch((error) => console.error("Error loading issue categories:", error));
   }, []);
+
+  const openNewIncident = () => {
+    touchedRef.current = new Set();
+    setAiFilled({});
+    setCategoryHint("");
+    setOpenForm(true);
+  };
+
+  const applyPriority = (label: string, fromAutoFill = false) => {
+    setFormData((prev) => ({ ...prev, priority: label.toUpperCase() }));
+    setAiFilled((prev) => ({ ...prev, priority: true }));
+    if (!fromAutoFill) touchedRef.current.add("priority");
+  };
+
+  const applyCategory = (label: string, fromAutoFill = false) => {
+    const match = categories.find(
+      (c) => c.category_name.toLowerCase() === label.toLowerCase()
+    );
+    if (!match) {
+      setCategoryHint(`AI suggests "${label}", but no issue category with that name exists yet.`);
+      return;
+    }
+    setFormData((prev) => ({ ...prev, issue_category_id: String(match.category_id) }));
+    setAiFilled((prev) => ({ ...prev, issue_category_id: true }));
+    setCategoryHint("");
+    if (!fromAutoFill) touchedRef.current.add("issue_category_id");
+  };
+
+  // New incidents: fill AI predictions into fields the user hasn't edited yet.
+  const handlePrediction = (classification: Classification) => {
+    if (editingIncidentId !== null) return;
+    if (!touchedRef.current.has("priority")) {
+      applyPriority(classification.priority.label, true);
+    }
+    if (!touchedRef.current.has("issue_category_id")) {
+      applyCategory(classification.category.label, true);
+    }
+  };
+
+  const markTouched = (field: AiField) => {
+    touchedRef.current.add(field);
+    setAiFilled((prev) => ({ ...prev, [field]: false }));
+  };
 
   const filteredIncidents = incidents.filter((incident) =>
     incident.incident_title
@@ -214,7 +276,7 @@ const [formData, setFormData] = useState({
         <Button
   variant="contained"
   startIcon={<Add />}
-  onClick={() => setOpenForm(true)}
+  onClick={openNewIncident}
 >
   New Incident
 </Button>
@@ -462,6 +524,8 @@ const [formData, setFormData] = useState({
     size="small"
     onClick={() => {
       setEditingIncidentId(incident.incident_id);
+      setAiFilled({});
+      setCategoryHint("");
 
       setFormData({
         incident_title: incident.incident_title,
@@ -521,7 +585,7 @@ const [formData, setFormData] = useState({
       open={openForm}
       onClose={() => setOpenForm(false)}
       fullWidth
-      maxWidth="md"
+      maxWidth="lg"
     >
    <DialogTitle sx={{ fontWeight: 700 }}>
   {editingIncidentId !== null
@@ -573,12 +637,14 @@ const [formData, setFormData] = useState({
             select
             fullWidth
             value={formData.priority}
-            onChange={(event) =>
+            helperText={aiFilled.priority ? "Filled by AI - change if needed" : undefined}
+            onChange={(event) => {
+              markTouched("priority");
               setFormData({
                 ...formData,
                 priority: event.target.value,
-              })
-            }
+              });
+            }}
           >
             <MenuItem value="LOW">LOW</MenuItem>
             <MenuItem value="MEDIUM">MEDIUM</MenuItem>
@@ -604,12 +670,23 @@ const [formData, setFormData] = useState({
             type="number"
             fullWidth
             value={formData.issue_category_id}
-            onChange={(event) =>
+            helperText={
+              categoryHint ||
+              (aiFilled.issue_category_id
+                ? `Filled by AI: ${
+                    categories.find(
+                      (c) => String(c.category_id) === formData.issue_category_id
+                    )?.category_name ?? ""
+                  }`
+                : undefined)
+            }
+            onChange={(event) => {
+              markTouched("issue_category_id");
               setFormData({
                 ...formData,
                 issue_category_id: event.target.value,
-              })
-            }
+              });
+            }}
           />
 
           <TextField
@@ -712,6 +789,16 @@ const [formData, setFormData] = useState({
                 safety_impact: event.target.value,
               })
             }
+          />
+        </Box>
+
+        <Box sx={{ mt: 2 }}>
+          <IncidentSuggestions
+            title={formData.incident_title}
+            description={formData.incident_description}
+            onPrediction={handlePrediction}
+            onApplyCategory={(label) => applyCategory(label)}
+            onApplyPriority={(label) => applyPriority(label)}
           />
         </Box>
 

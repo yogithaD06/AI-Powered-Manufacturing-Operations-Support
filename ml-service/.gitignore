@@ -1,0 +1,6 @@
+.venv/
+__pycache__/
+models/
+ml_store.db
+.env
+docs

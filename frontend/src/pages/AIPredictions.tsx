@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 
+import ModelStatusCard from "../components/ml/ModelStatusCard";
+import RecurringIssuesCard from "../components/ml/RecurringIssuesCard";
+
 import {
   Add,
   AutoAwesome,
@@ -509,6 +512,12 @@ export default function AIPredictions() {
           </Box>
         </CardContent>
       </Card>
+
+      {/* LIVE ML SERVICE: model status + recurring issues */}
+      <Box sx={{ display: "grid", gap: 3, mb: 3 }}>
+        <ModelStatusCard />
+        <RecurringIssuesCard limit={8} />
+      </Box>
 
       {/* ================================================= */}
       {/* AI KPI CARDS */}
