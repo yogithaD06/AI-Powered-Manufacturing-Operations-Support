@@ -1,0 +1,19 @@
+title,description,category,root_cause_category
+Screeching metal sound from main shaft,"Lathe headstock is screaming when it spins up, vibration felt on the guard. Bearings feel rough when turned by hand.",Mechanical,Machine
+Oil puddle forming under the press,Hydraulic fluid dripping from the ram cylinder seal since morning. Had to put absorbent pads down.,Mechanical,Material
+Conveyor drive slipping under load,"The transfer belt keeps losing grip when boxes are heavy, product moves in jerks. Belt looks loose.",Mechanical,Method
+Drive keeps tripping the breaker,Main motor trips the overload relay every hour and the casing is very warm. Current reading higher than normal.,Electrical,Machine
+Proximity switch missing parts randomly,"Part-present sensor flickers, sometimes doesn't see the part and the station halts. Cable is rubbing on the frame.",Electrical,Machine
+Panel lights flicker and controller reboots,Control cabinet restarts on its own when the big compressor starts. Incoming voltage seems to dip.,Electrical,Environment
+Shaft diameter measuring oversize,Final inspection rejecting shafts at 0.04 mm over the upper limit after the insert was changed.,Quality,Measurement
+Scuff marks on finished housings,Customers complaining about scratched covers. Parts are rubbing together in the bin during transfer.,Quality,Method
+Pinholes in weld seam,X-ray shows gas pockets in the seam welds. Wire spool was left open overnight in humid store.,Quality,Material
+Machine started without its interlock cover,Fixed guard was not put back after the PM job and the press was run without it.,Safety,Man
+Worker nearly fell on greasy floor,Slippery patch of lubricant next to the stamping area. Nobody cleaned the leak from yesterday.,Safety,Environment
+Burnt odour from distribution board,"Cable terminal at the feeder is discoloured and hot, faint crackling noise when line runs at full load.",Safety,Machine
+Changeover taking much longer than planned,Die change took 70 minutes instead of 40. Each crew follows its own sequence of steps.,Process,Method
+Coating finish uneven on panels,"Film build varies a lot across the panel, booth feels damp and the exhaust filter looks blocked.",Process,Environment
+Line idle waiting for steel coils,No coils at the feeder for two hours. The reorder was triggered late and the truck had not arrived.,Process,Material
+Controller halted with error code,The PLC stopped the program and shows a communication fault after the software update last night.,Automation,Machine
+Output counts not showing in MES,Dashboard shows zero parts produced for the cell although the line is running. Barcode reader also missing scans.,Automation,Measurement
+Pick and place arm missing the target,Robot gripper grabs parts off-centre since the emergency stop yesterday. Alignment drifting.,Automation,Method

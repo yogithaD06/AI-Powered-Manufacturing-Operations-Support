@@ -1,0 +1,13 @@
+machine_id,machine_type,line
+CNC-01,CNC Milling Machine,Line-A
+CNC-02,CNC Lathe,Line-A
+PRS-01,Hydraulic Press,Line-B
+PRS-02,Stamping Press,Line-B
+CNV-01,Conveyor Belt,Line-C
+CNV-02,Conveyor Belt,Line-C
+WLD-01,Welding Robot,Line-D
+WLD-02,Welding Robot,Line-D
+PNT-01,Paint Booth,Line-E
+ASM-01,Assembly Station,Line-E
+PKG-01,Packaging Unit,Line-F
+CMP-01,Air Compressor,Utilities

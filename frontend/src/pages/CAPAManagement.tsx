@@ -1,6 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 
+import { mlApi } from "../api/ml";
+import CAPAAssistant, {
+  type CAPAFeedbackContext,
+} from "../components/ml/CAPAAssistant";
+
 import {
   Add,
   Assessment,
@@ -89,6 +94,11 @@ export default function CAPAManagement() {
     null
   );
 
+  // Set when the form was filled from an AI-drafted action: saving then also
+  // sends the human-approved action to the ML service as training feedback.
+  const [aiContext, setAiContext] =
+    useState<CAPAFeedbackContext | null>(null);
+
   const [formData, setFormData] = useState({
     incident_id: "",
     action_type: "",
@@ -141,6 +151,7 @@ export default function CAPAManagement() {
     });
 
     setEditingCapaId(null);
+    setAiContext(null);
   };
 
   const handleChange = (
@@ -212,6 +223,26 @@ export default function CAPAManagement() {
         setSaveMessage(
           "CAPA record saved successfully."
         );
+      }
+
+      if (aiContext) {
+        const isPreventive = formData.action_type === "PREVENTIVE";
+        try {
+          await mlApi.feedback({
+            title: aiContext.title,
+            description: aiContext.description,
+            root_cause: aiContext.root_cause || null,
+            root_cause_category: aiContext.root_cause_category || null,
+            corrective_action: isPreventive ? null : formData.action_description,
+            preventive_action: isPreventive ? formData.action_description : null,
+            source: "capa_page",
+          });
+          setSaveMessage(
+            "CAPA saved successfully and added to the ML knowledge base (used from the next retrain)."
+          );
+        } catch (error) {
+          console.error("Failed to send CAPA feedback to the ML service:", error);
+        }
       }
 
       await fetchCAPARecords();
@@ -974,7 +1005,7 @@ export default function CAPAManagement() {
           }
         }}
         fullWidth
-        maxWidth="md"
+        maxWidth="lg"
       >
         <DialogTitle
           sx={{
@@ -1005,6 +1036,16 @@ export default function CAPAManagement() {
                     event.target.value
                   )
                 }
+              />
+            </Grid>
+
+            <Grid size={{ xs: 12 }}>
+              <CAPAAssistant
+                incidentId={formData.incident_id}
+                onApply={(values, context) => {
+                  setFormData((prev) => ({ ...prev, ...values }));
+                  setAiContext(context);
+                }}
               />
             </Grid>
 

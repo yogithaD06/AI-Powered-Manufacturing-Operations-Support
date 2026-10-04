@@ -62,6 +62,7 @@ import AIPredictions from "./pages/AIPredictions";
 import DashboardKPI from "./pages/DashboardKPI";
 import NotificationsAlerts from "./pages/NotificationsAlerts";
 import UserRoleManagement from "./pages/UserRoleManagement";
+import RecurringIssuesCard from "./components/ml/RecurringIssuesCard";
 import "./App.css";
 
 const drawerWidth = 270;
@@ -763,6 +764,10 @@ const statusData = [
   </Grid>
 
  </Grid>
+
+        <Box sx={{ mt: 2.5 }}>
+          <RecurringIssuesCard />
+        </Box>
   </>
 )}
       </Box>

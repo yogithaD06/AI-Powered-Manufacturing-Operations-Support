@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 
+import { mlApi } from "../api/ml";
+import RCAAssistant from "../components/ml/RCAAssistant";
+
 import {
   Add,
   Analytics,
@@ -94,6 +97,13 @@ export default function RCAManagement() {
 
   const [editingRcaId, setEditingRcaId] = useState<number | null>(null);
 
+  // Set when the form was filled from the AI draft: saving then also sends the
+  // human-approved RCA to the ML service as training feedback.
+  const [aiIncident, setAiIncident] = useState<{
+    title: string;
+    description: string;
+  } | null>(null);
+
   const [formData, setFormData] = useState({
     incident_id: "",
     investigation_notes: "",
@@ -146,6 +156,7 @@ export default function RCAManagement() {
     });
 
     setEditingRcaId(null);
+    setAiIncident(null);
   };
 
   const handleChange = (
@@ -214,6 +225,24 @@ export default function RCAManagement() {
         );
 
         setSaveMessage("RCA record saved successfully.");
+      }
+
+      if (aiIncident) {
+        try {
+          await mlApi.feedback({
+            title: aiIncident.title,
+            description: aiIncident.description,
+            root_cause_category: formData.root_cause_category || null,
+            root_cause: formData.root_cause || null,
+            corrective_action: formData.corrective_action_required || null,
+            source: "rca_page",
+          });
+          setSaveMessage(
+            "RCA saved successfully and added to the ML knowledge base (used from the next retrain)."
+          );
+        } catch (error) {
+          console.error("Failed to send RCA feedback to the ML service:", error);
+        }
       }
 
       await fetchRCARecords();
@@ -1414,7 +1443,7 @@ export default function RCAManagement() {
           }
         }}
         fullWidth
-        maxWidth="md"
+        maxWidth="lg"
       >
         <DialogTitle
           sx={{
@@ -1503,6 +1532,16 @@ export default function RCAManagement() {
                   COMPLETED
                 </MenuItem>
               </TextField>
+            </Grid>
+
+            <Grid size={{ xs: 12 }}>
+              <RCAAssistant
+                incidentId={formData.incident_id}
+                onApply={(values, incident) => {
+                  setFormData((prev) => ({ ...prev, ...values }));
+                  setAiIncident(incident);
+                }}
+              />
             </Grid>
 
             <Grid size={{ xs: 12 }}>
